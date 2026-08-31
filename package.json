@@ -1,0 +1,14 @@
+{
+  "name": "acceso-directo-cursor",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Clonar repo de GitHub por nombre, configurar rama main y acceso directo a Cursor o VS Code",
+  "scripts": {
+    "start:cursor": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./scripts/nuevo-proyecto-cursor.ps1",
+    "start:vscode": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./scripts/nuevo-proyecto-vscode.ps1",
+    "build:cursor": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./scripts/build-shortcut.ps1 -Target cursor",
+    "build:vscode": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./scripts/build-shortcut.ps1 -Target vscode",
+    "ejecutable:cursor": "npm run build:cursor",
+    "ejecutable:vscode": "npm run build:vscode"
+  }
+}
