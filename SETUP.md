@@ -35,7 +35,7 @@ El archivo [`config/config.json`](config/config.json) es **público** en el repo
 
 ```json
 {
-  "githubUser": "josejavierdiazglez",
+  "githubUser": "javierdiazglez",
   "projectsFolder": "Proyectos",
   "shortcutsFolder": "Desktop"
 }
@@ -43,7 +43,7 @@ El archivo [`config/config.json`](config/config.json) es **público** en el repo
 
 | Campo | Descripción | Valor de ejemplo |
 |-------|-------------|------------------|
-| `githubUser` | Usuario de GitHub. El script clona `https://github.com/<githubUser>/<nombre>.git` | `josejavierdiazglez` |
+| `githubUser` | Usuario de GitHub. El script clona `https://github.com/<githubUser>/<nombre>.git` | `javierdiazglez` |
 | `projectsFolder` | Carpeta relativa bajo `%USERPROFILE%` donde se crean los proyectos | `Proyectos` |
 | `shortcutsFolder` | Destino de los accesos directos. Usa `Desktop` o una ruta absoluta | `Desktop` |
 
@@ -93,7 +93,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\nuevo-proyecto
 
 ## Salida esperada
 
-Al introducir el nombre del proyecto (por ejemplo, `josejavierdiazglez`), la consola muestra un resumen como el siguiente:
+Al introducir el nombre del proyecto (por ejemplo, `javierdiazglez`), la consola muestra un resumen como el siguiente:
 
 ![Captura de la salida real del script en consola](./docs/images/salida-ejemplo.png)
 
@@ -176,7 +176,7 @@ The [`config/config.json`](config/config.json) file is **public** in the reposit
 
 ```json
 {
-  "githubUser": "josejavierdiazglez",
+  "githubUser": "javierdiazglez",
   "projectsFolder": "Proyectos",
   "shortcutsFolder": "Desktop"
 }
@@ -184,7 +184,7 @@ The [`config/config.json`](config/config.json) file is **public** in the reposit
 
 | Field | Description | Example value |
 |-------|-------------|---------------|
-| `githubUser` | GitHub username. The script clones `https://github.com/<githubUser>/<nombre>.git` | `josejavierdiazglez` |
+| `githubUser` | GitHub username. The script clones `https://github.com/<githubUser>/<nombre>.git` | `javierdiazglez` |
 | `projectsFolder` | Folder relative to `%USERPROFILE%` where projects are created | `Proyectos` |
 | `shortcutsFolder` | Shortcut destination. Use `Desktop` or an absolute path | `Desktop` |
 
@@ -234,7 +234,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\nuevo-proyecto
 
 ## Expected output
 
-When you enter the project name (for example, `josejavierdiazglez`), the console shows a summary like the following:
+When you enter the project name (for example, `javierdiazglez`), the console shows a summary like the following:
 
 ![Console output screenshot](./docs/images/salida-ejemplo.png)
 
