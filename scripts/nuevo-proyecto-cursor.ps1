@@ -141,6 +141,57 @@ function Read-RequiredText {
     return $value
 }
 
+function Resolve-ProjectInput {
+    param(
+        [string]$RelativeInput,
+        [string]$BasePath
+    )
+
+    $relative = $RelativeInput.Trim()
+    $relative = $relative -replace '/', '\'
+
+    if ([string]::IsNullOrWhiteSpace($relative)) {
+        throw "La ruta del proyecto no puede estar vacia."
+    }
+
+    if ([System.IO.Path]::IsPathRooted($relative)) {
+        throw "Usa una ruta relativa bajo Proyectos, no una ruta absoluta."
+    }
+
+    foreach ($segment in $relative.Split('\', [StringSplitOptions]::RemoveEmptyEntries)) {
+        if ($segment -eq '..') {
+            throw "La ruta no puede contener '..'."
+        }
+    }
+
+    $normalizedBase = [System.IO.Path]::GetFullPath($BasePath)
+    if (-not $normalizedBase.EndsWith([System.IO.Path]::DirectorySeparatorChar)) {
+        $normalizedBase += [System.IO.Path]::DirectorySeparatorChar
+    }
+
+    $projectPath = [System.IO.Path]::GetFullPath((Join-Path $BasePath $relative))
+
+    if (-not $projectPath.StartsWith($normalizedBase, [StringComparison]::OrdinalIgnoreCase)) {
+        throw "La ruta debe estar dentro de la carpeta de proyectos."
+    }
+
+    $baseTrimmed = $normalizedBase.TrimEnd([System.IO.Path]::DirectorySeparatorChar)
+    if ($projectPath.TrimEnd([System.IO.Path]::DirectorySeparatorChar) -eq $baseTrimmed) {
+        throw "Indica el nombre o la ruta de la carpeta del proyecto, no solo la carpeta base."
+    }
+
+    $repoName = [System.IO.Path]::GetFileName($projectPath.TrimEnd('\', '/'))
+    if ([string]::IsNullOrWhiteSpace($repoName)) {
+        throw "No se pudo determinar el nombre del repositorio."
+    }
+
+    return [PSCustomObject]@{
+        RelativePath = $relative
+        ProjectPath  = $projectPath
+        RepoName     = $repoName
+    }
+}
+
 function Write-Separator {
     Write-Host ("-" * 50) -ForegroundColor DarkGray
 }
@@ -174,6 +225,11 @@ function Initialize-ProjectGit {
     }
 
     if (-not $folderExists) {
+        $parentDir = Split-Path -Parent $ProjectPath
+        if ($parentDir -and -not (Test-Path -LiteralPath $parentDir)) {
+            New-Item -ItemType Directory -Path $parentDir -Force | Out-Null
+        }
+
         Write-Host "Clonando repositorio..." -ForegroundColor Yellow
         Invoke-GitClone -RepositoryUrl $OriginUrl -DestinationPath $ProjectPath | Out-Null
         $Summary.Value += "Repositorio clonado desde $OriginUrl."
@@ -206,15 +262,17 @@ try {
 
     Assert-GitAvailable
     $cursorExe = Get-CursorExePath
-    $projectName = Read-RequiredText "Nombre de la carpeta del proyecto"
+    $relativeInput = Read-RequiredText "Ruta del proyecto"
 
     if (-not (Test-Path -LiteralPath $basePath)) {
         New-Item -ItemType Directory -Path $basePath -Force | Out-Null
     }
 
-    $projectPath = [System.IO.Path]::GetFullPath((Join-Path $basePath $projectName))
-    $shortcutPath = Join-Path $desktopPath "$projectName.lnk"
-    $originUrl = "https://github.com/$githubUser/$projectName.git"
+    $resolved = Resolve-ProjectInput -RelativeInput $relativeInput -BasePath $basePath
+    $projectPath = $resolved.ProjectPath
+    $repoName = $resolved.RepoName
+    $shortcutPath = Join-Path $desktopPath "$repoName.lnk"
+    $originUrl = "https://github.com/$githubUser/$repoName.git"
     $summary = @()
 
     Initialize-ProjectGit -ProjectPath $projectPath -OriginUrl $originUrl -Summary ([ref]$summary)
@@ -225,7 +283,7 @@ try {
     $shortcut.Arguments = "`"$projectPath`" --new-window"
     $shortcut.IconLocation = "$iconPath,0"
     $shortcut.WorkingDirectory = $projectPath
-    $shortcut.Description = "Abrir $projectName en Cursor"
+    $shortcut.Description = "Abrir $repoName en Cursor"
     $shortcut.Save()
 
     $summary += "Acceso directo creado en el Escritorio."
